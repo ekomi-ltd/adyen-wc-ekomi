@@ -595,9 +595,9 @@ SSL: <?php echo is_ssl() ? 'Yes' : 'No'; ?>
             ));
         }
 
-        $api_key = $gateway->get_option('api_key');
-        $merchant_account = $gateway->get_option('merchant_account');
         $testmode = $gateway->get_option('testmode') === 'yes';
+        $api_key = $testmode ? $gateway->get_option('test_api_key') : $gateway->get_option('live_api_key');
+        $merchant_account = $gateway->get_option('merchant_account');
         $live_url_prefix = $gateway->get_option('live_url_prefix');
 
         if (empty($api_key) || empty($merchant_account)) {
@@ -608,7 +608,7 @@ SSL: <?php echo is_ssl() ? 'Yes' : 'No'; ?>
 
         try {
             require_once ADYEN_APPLE_PAY_PLUGIN_DIR . 'includes/class-adyen-api.php';
-            $api = new Adyen_Apple_Pay_API($api_key, $merchant_account, $testmode, $live_url_prefix);
+            $api = new Adyen_API($api_key, $merchant_account, $testmode, $live_url_prefix);
 
             // Try to create a test session with minimal data
             $test_data = array(
