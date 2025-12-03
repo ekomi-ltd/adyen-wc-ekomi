@@ -1,0 +1,549 @@
+/* Adyen Apple Pay Admin Styles */
+
+.adyen-admin-wrap {
+    margin: 20px 20px 0 2px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+/* Header */
+.adyen-admin-header {
+    background: linear-gradient(135deg, #0066CC 0%, #0052A3 100%);
+    color: #fff;
+    padding: 20px 30px;
+    border-bottom: 3px solid #004080;
+}
+
+.adyen-admin-logo {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.adyen-admin-logo img {
+    height: 40px;
+    background: #fff;
+    padding: 5px 15px;
+    border-radius: 4px;
+}
+
+.adyen-admin-logo h1 {
+    margin: 0;
+    color: #fff;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.adyen-version {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+/* Container - Two column layout */
+.adyen-admin-container {
+    display: flex;
+    min-height: 500px;
+    background: #fff;
+}
+
+/* Sidebar Navigation */
+.adyen-admin-sidebar {
+    width: 240px;
+    background: #2c3338;
+    flex-shrink: 0;
+    padding: 20px 0;
+}
+
+.adyen-admin-nav {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.adyen-nav-item {
+    display: flex !important;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    color: #a7aaad !important;
+    text-decoration: none !important;
+    border-left: 4px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+    font-size: 14px;
+    box-shadow: none !important;
+}
+
+.adyen-nav-item:hover {
+    background: rgba(255,255,255,0.05);
+    color: #fff !important;
+    border-left-color: transparent;
+}
+
+.adyen-nav-item.active {
+    background: rgba(255,255,255,0.1);
+    border-left-color: #0073aa;
+    color: #fff !important;
+    font-weight: 600;
+}
+
+.adyen-nav-item:focus {
+    box-shadow: none !important;
+    outline: none;
+}
+
+.adyen-nav-item .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.adyen-nav-item .dashicons-external {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    opacity: 0.5;
+    margin-left: auto;
+}
+
+/* Main Content Area */
+.adyen-admin-main {
+    flex: 1;
+    padding: 30px;
+    background: #fff;
+}
+
+.adyen-admin-main h2 {
+    margin-top: 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+/* Legacy content class for compatibility */
+.adyen-admin-content {
+    padding: 30px;
+}
+
+.adyen-admin-content h2 {
+    margin-top: 0;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+/* Dashboard Cards */
+.adyen-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.adyen-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    transition: all 0.3s ease;
+}
+
+.adyen-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.adyen-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.adyen-card-icon .dashicons {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    color: #fff;
+}
+
+.adyen-card-icon-green {
+    background: linear-gradient(135deg, #46b450 0%, #2E7D32 100%);
+}
+
+.adyen-card-icon-blue {
+    background: linear-gradient(135deg, #0073aa 0%, #005177 100%);
+}
+
+.adyen-card-icon-purple {
+    background: linear-gradient(135deg, #826eb4 0%, #5E4A84 100%);
+}
+
+.adyen-card-icon-red {
+    background: linear-gradient(135deg, #dc3232 0%, #A62828 100%);
+}
+
+.adyen-card-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #666;
+    font-weight: 400;
+}
+
+.adyen-card-value {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+/* Status Badges */
+.status-enabled {
+    color: #46b450;
+}
+
+.status-disabled {
+    color: #999;
+}
+
+.status-test {
+    color: #ff8c00;
+}
+
+.status-live {
+    color: #46b450;
+}
+
+.status-error {
+    color: #dc3232;
+}
+
+/* Quick Actions */
+.adyen-quick-actions {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.adyen-quick-actions h3 {
+    margin-top: 0;
+}
+
+.adyen-action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.adyen-action-buttons .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.adyen-action-buttons .dashicons {
+    margin-top: 3px;
+}
+
+/* System Status */
+.adyen-system-status {
+    margin: 30px 0;
+}
+
+.adyen-system-status table {
+    margin-top: 15px;
+}
+
+.adyen-system-status td {
+    padding: 12px;
+}
+
+.adyen-system-status td:last-child {
+    text-align: center;
+    font-size: 20px;
+}
+
+/* Tools */
+.adyen-tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.adyen-tool-box {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.adyen-tool-box h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 0;
+}
+
+.adyen-tool-box .dashicons {
+    color: #0073aa;
+}
+
+/* Documentation */
+.adyen-docs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.adyen-doc-section {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.adyen-doc-section h3 {
+    margin-top: 0;
+    color: #0073aa;
+}
+
+.adyen-doc-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.adyen-doc-section li {
+    padding: 8px 0;
+}
+
+.adyen-doc-section a {
+    text-decoration: none;
+}
+
+.adyen-doc-section a:hover {
+    text-decoration: underline;
+}
+
+/* Notices */
+.adyen-notice {
+    padding: 15px;
+    margin: 20px 0;
+    border-left: 4px solid #0073aa;
+    background: #f0f6fc;
+    border-radius: 4px;
+}
+
+.adyen-notice-info {
+    border-left-color: #0073aa;
+    background: #f0f6fc;
+}
+
+.adyen-notice-warning {
+    border-left-color: #ff8c00;
+    background: #fff8e6;
+}
+
+.adyen-notice-error {
+    border-left-color: #dc3232;
+    background: #ffebe8;
+}
+
+.adyen-notice p {
+    margin: 0.5em 0;
+}
+
+/* Logs */
+.adyen-logs-container {
+    margin-top: 20px;
+}
+
+.adyen-logs-controls {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.adyen-logs-controls label {
+    font-weight: 600;
+}
+
+.adyen-logs-controls select {
+    min-width: 300px;
+}
+
+.adyen-logs-actions {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.adyen-log-content {
+    background: #f5f5f5;
+    padding: 15px;
+    border: 1px solid #ddd;
+    min-height: 400px;
+    max-height: 600px;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Configuration Form */
+.adyen-admin-content .form-table,
+.adyen-admin-main .form-table {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.adyen-admin-content .form-table th,
+.adyen-admin-main .form-table th {
+    padding: 20px;
+    font-weight: 600;
+    width: 250px;
+    background: #f8f9fa;
+}
+
+.adyen-admin-content .form-table td,
+.adyen-admin-main .form-table td {
+    padding: 20px;
+}
+
+.adyen-admin-content .form-table input[type="text"],
+.adyen-admin-content .form-table input[type="password"],
+.adyen-admin-content .form-table textarea,
+.adyen-admin-content .form-table select,
+.adyen-admin-main .form-table input[type="text"],
+.adyen-admin-main .form-table input[type="password"],
+.adyen-admin-main .form-table textarea,
+.adyen-admin-main .form-table select {
+    width: 100%;
+    max-width: 500px;
+}
+
+.adyen-admin-content .form-table textarea,
+.adyen-admin-main .form-table textarea {
+    min-height: 80px;
+}
+
+.adyen-admin-content .form-table .description,
+.adyen-admin-main .form-table .description {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
+    display: block;
+}
+
+.adyen-admin-content p.submit,
+.adyen-admin-main p.submit {
+    padding: 20px 0;
+    margin: 0;
+    border-top: 2px solid #f0f0f1;
+}
+
+.adyen-admin-content .button-large,
+.adyen-admin-main .button-large {
+    padding: 10px 30px !important;
+    height: auto !important;
+    line-height: 1.5 !important;
+    font-size: 16px !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .adyen-admin-container {
+        flex-direction: column;
+    }
+
+    .adyen-admin-sidebar {
+        width: 100%;
+        padding: 0;
+    }
+
+    .adyen-admin-nav {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .adyen-nav-item {
+        white-space: nowrap;
+        border-left: none !important;
+        border-bottom: 4px solid transparent;
+        padding: 14px 16px;
+    }
+
+    .adyen-nav-item.active {
+        border-left: none !important;
+        border-bottom-color: #0073aa !important;
+    }
+
+    .adyen-nav-item:hover {
+        border-bottom-color: transparent;
+    }
+}
+
+@media (max-width: 768px) {
+    .adyen-admin-main {
+        padding: 15px;
+    }
+
+    .adyen-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .adyen-tools {
+        grid-template-columns: 1fr;
+    }
+
+    .adyen-docs {
+        grid-template-columns: 1fr;
+    }
+
+    .adyen-action-buttons {
+        flex-direction: column;
+    }
+
+    .adyen-action-buttons .button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .adyen-admin-content .form-table th,
+    .adyen-admin-content .form-table td,
+    .adyen-admin-main .form-table th,
+    .adyen-admin-main .form-table td {
+        display: block;
+        width: 100%;
+        padding: 15px;
+    }
+
+    .adyen-admin-content .form-table th,
+    .adyen-admin-main .form-table th {
+        border-bottom: none;
+        padding-bottom: 5px;
+    }
+
+    .adyen-nav-item {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+}
