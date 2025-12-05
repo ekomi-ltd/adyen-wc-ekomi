@@ -3,7 +3,7 @@
  * Plugin Name: Adyen Apple Pay for WooCommerce
  * Plugin URI: https://ekomi.de
  * Description: Accept Apple Pay payments through Adyen in your WooCommerce store
- * Version: 1.1.5
+ * Version: 1.1.7
  * Author: Product @ eKomi
  * Author URI: https://ekomi.de
  * License: GPL v2 or later
@@ -21,7 +21,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('ADYEN_APPLE_PAY_VERSION', '1.1.5');
+define('ADYEN_APPLE_PAY_VERSION', '1.1.7');
 define('ADYEN_APPLE_PAY_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('ADYEN_APPLE_PAY_PLUGIN_URL', plugin_dir_url(__FILE__));
 

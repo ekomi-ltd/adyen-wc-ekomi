@@ -81,11 +81,20 @@ msgstr "Titel der Zahlungsmethode, den Kunden beim Checkout sehen"
 msgid "Apple Pay"
 msgstr "Apple Pay"
 
+msgid "Apple Pay - eKomi"
+msgstr "Apple Pay - eKomi"
+
+msgid "Pay securely with Apple Pay via Adyen"
+msgstr "Bezahlen Sie sicher mit Apple Pay über Adyen"
+
 msgid "Description"
 msgstr "Beschreibung"
 
 msgid "Payment method description that customers see during checkout"
 msgstr "Beschreibung der Zahlungsmethode, die Kunden beim Checkout sehen"
+
+msgid "Payment method description that customers see during checkout (leave empty for clean display)"
+msgstr "Beschreibung der Zahlungsmethode, die Kunden beim Checkout sehen (leer lassen für eine saubere Anzeige)"
 
 msgid "Pay securely with Apple Pay. Fast, secure, and private - using the payment cards you already have in your Apple Wallet."
 msgstr "Bezahlen Sie sicher mit Apple Pay. Schnell, sicher und privat - mit den Zahlungskarten, die Sie bereits in Ihrer Apple Wallet haben."

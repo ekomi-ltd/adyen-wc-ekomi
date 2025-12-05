@@ -8,8 +8,8 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
 
     public function __construct() {
         $this->id = 'adyen_apple_pay';
-        $this->icon = '';
-        $this->has_fields = true;
+        $this->icon = ADYEN_APPLE_PAY_PLUGIN_URL . 'assets/images/apple-pay-mark.svg';
+        $this->has_fields = false;
         $this->method_title = __('Adyen Apple Pay', 'adyen-apple-pay');
         $this->method_description = __('Accept Apple Pay payments through Adyen', 'adyen-apple-pay');
         $this->supports = array(
@@ -72,14 +72,14 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
                 'title' => __('Title', 'adyen-apple-pay'),
                 'type' => 'text',
                 'description' => __('Payment method title that customers see during checkout', 'adyen-apple-pay'),
-                'default' => __('Apple Pay', 'adyen-apple-pay'),
+                'default' => __('Apple Pay - eKomi', 'adyen-apple-pay'),
                 'desc_tip' => true
             ),
             'description' => array(
                 'title' => __('Description', 'adyen-apple-pay'),
                 'type' => 'textarea',
                 'description' => __('Payment method description that customers see during checkout', 'adyen-apple-pay'),
-                'default' => __('Pay securely with Apple Pay. Fast, secure, and private - using the payment cards you already have in your Apple Wallet.', 'adyen-apple-pay'),
+                'default' => __('Pay securely with Apple Pay via Adyen', 'adyen-apple-pay'),
                 'desc_tip' => true
             ),
             'testmode' => array(
@@ -202,27 +202,12 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
     }
 
     public function payment_fields() {
+        // Clean display - only show description if set in settings
         if ($this->description) {
-            echo wpautop(wp_kses_post($this->description));
+            echo '<div class="adyen-apple-pay-description" style="margin: 5px 0; font-size: 14px; color: #666;">';
+            echo wp_kses_post($this->description);
+            echo '</div>';
         }
-
-        // Add user-friendly instruction in appropriate language
-        $locale = get_locale();
-        $is_german = (strpos($locale, 'de') === 0);
-
-        if ($is_german) {
-            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #000; border-radius: 4px;">' .
-                '<strong>🍎 Apple Pay</strong><br>' .
-                '<span style="color: #666; font-size: 14px;">Nachdem Sie auf "Bestellung aufgeben" geklickt haben, werden Sie zu einer sicheren Seite weitergeleitet, um Ihre Apple Pay-Zahlung abzuschließen.</span>' .
-                '</p>';
-        } else {
-            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #000; border-radius: 4px;">' .
-                '<strong>🍎 Apple Pay</strong><br>' .
-                '<span style="color: #666; font-size: 14px;">After clicking "Place Order", you will be redirected to a secure page to complete your Apple Pay payment.</span>' .
-                '</p>';
-        }
-
-        echo $instruction;
     }
 
     public function process_payment($order_id) {
