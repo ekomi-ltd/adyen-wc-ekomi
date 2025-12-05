@@ -31,6 +31,7 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
 
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
         add_action('woocommerce_api_adyen_apple_pay_webhook', array($this, 'webhook_handler'));
+        add_action('woocommerce_api_adyen_apple_pay_return', array($this, 'return_handler'));
         add_action('wp_enqueue_scripts', array($this, 'payment_scripts'));
 
         // Note: AJAX actions are registered in main plugin file for early availability
@@ -134,30 +135,48 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
                     __('Log events to %s', 'adyen-apple-pay'),
                     '<code>' . WC_Log_Handler_File::get_log_file_path('adyen-apple-pay') . '</code>'
                 )
+            ),
+            'show_debug_console' => array(
+                'title' => __('On-Screen Debug Console', 'adyen-apple-pay'),
+                'type' => 'checkbox',
+                'label' => __('Show debug console on checkout page', 'adyen-apple-pay'),
+                'default' => 'no',
+                'description' => __('Display a floating debug console on the checkout page. Useful for debugging on mobile devices (iPhone/iPad). Only visible to logged-in administrators.', 'adyen-apple-pay')
             )
         );
     }
 
     public function is_available() {
+        $this->log('=== Adyen Apple Pay: Checking if gateway is available ===');
+
         $is_available = parent::is_available();
+        $this->log('Adyen Apple Pay: Parent is_available check: ' . ($is_available ? 'PASSED' : 'FAILED'));
+        $this->log('Adyen Apple Pay: Gateway enabled setting: ' . $this->enabled);
 
         if (!$is_available) {
+            $this->log('Adyen Apple Pay: Gateway NOT available - parent check failed');
             return false;
         }
 
-        // Check if required settings are configured
         if (empty($this->merchant_account)) {
+            $this->log('Adyen Apple Pay: Gateway NOT available - Merchant Account is EMPTY');
             return false;
         }
+        $this->log('Adyen Apple Pay: Merchant Account: ' . substr($this->merchant_account, 0, 10) . '...');
 
         if (empty($this->api_key)) {
+            $this->log('Adyen Apple Pay: Gateway NOT available - API Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
             return false;
         }
+        $this->log('Adyen Apple Pay: API Key: ' . substr($this->api_key, 0, 10) . '... (length: ' . strlen($this->api_key) . ')');
 
         if (empty($this->client_key)) {
+            $this->log('Adyen Apple Pay: Gateway NOT available - Client Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
             return false;
         }
+        $this->log('Adyen Apple Pay: Client Key: ' . substr($this->client_key, 0, 10) . '... (length: ' . strlen($this->client_key) . ')');
 
+        $this->log('Adyen Apple Pay: Gateway IS AVAILABLE - All checks passed!');
         return true;
     }
 
@@ -192,23 +211,22 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
         $is_german = (strpos($locale, 'de') === 0);
 
         if ($is_german) {
-            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; color: #666; font-size: 14px;">' .
-                '<strong>💳 So einfach geht\'s:</strong> Klicken Sie auf die Apple Pay-Schaltfläche unten, um Ihre Zahlung sicher und schnell abzuschließen.' .
+            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #000; border-radius: 4px;">' .
+                '<strong>🍎 Apple Pay</strong><br>' .
+                '<span style="color: #666; font-size: 14px;">Nachdem Sie auf "Bestellung aufgeben" geklickt haben, werden Sie zu einer sicheren Seite weitergeleitet, um Ihre Apple Pay-Zahlung abzuschließen.</span>' .
                 '</p>';
         } else {
-            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; color: #666; font-size: 14px;">' .
-                '<strong>💳 How it works:</strong> Click the Apple Pay button below to complete your payment securely and quickly.' .
+            $instruction = '<p class="adyen-apple-pay-instruction" style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 3px solid #000; border-radius: 4px;">' .
+                '<strong>🍎 Apple Pay</strong><br>' .
+                '<span style="color: #666; font-size: 14px;">After clicking "Place Order", you will be redirected to a secure page to complete your Apple Pay payment.</span>' .
                 '</p>';
         }
 
         echo $instruction;
-
-        echo '<div id="adyen-apple-pay-button" class="adyen-apple-pay-button-container"></div>';
-        echo '<input type="hidden" id="adyen_payment_data" name="adyen_payment_data" />';
     }
 
     public function process_payment($order_id) {
-        $this->log('========== PROCESSING PAYMENT START ==========');
+        $this->log('========== PROCESSING PAYMENT START (HOSTED CHECKOUT) ==========');
         $this->log('Order ID: ' . $order_id);
 
         $order = wc_get_order($order_id);
@@ -221,130 +239,62 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
 
         $this->log('Order Details - Number: ' . $order->get_order_number() . ', Total: ' . $order->get_total() . ' ' . $order->get_currency());
 
-        // Try to get payment data from multiple sources
-        $payment_data_raw = '';
+        // Mark order as pending payment
+        $order->update_status('pending', __('Awaiting Adyen Apple Pay payment', 'adyen-apple-pay'));
 
-        if (isset($_POST['adyen_payment_data']) && !empty($_POST['adyen_payment_data'])) {
-            $payment_data_raw = stripslashes($_POST['adyen_payment_data']);
-            $this->log('Payment data source: adyen_payment_data');
-        } elseif (isset($_POST['adyen_payment_result']) && !empty($_POST['adyen_payment_result'])) {
-            $payment_data_raw = stripslashes($_POST['adyen_payment_result']);
-            $this->log('Payment data source: adyen_payment_result (fallback)');
-        }
-
-        $this->log('Raw Payment Data (first 200 chars): ' . substr($payment_data_raw, 0, 200));
-        $this->log('Payment Data Length: ' . strlen($payment_data_raw));
-        $this->log('adyen_payment_data in POST: ' . (isset($_POST['adyen_payment_data']) ? 'Yes' : 'No'));
-        $this->log('adyen_payment_result in POST: ' . (isset($_POST['adyen_payment_result']) ? 'Yes' : 'No'));
-
-        $payment_data = $payment_data_raw ? json_decode($payment_data_raw, true) : null;
-
-        $this->log('Payment Data Received: ' . ($payment_data ? 'Yes' : 'No'));
-
-        if ($payment_data) {
-            $this->log('Payment Data Keys: ' . implode(', ', array_keys($payment_data)));
-            if (isset($payment_data['resultCode'])) {
-                $this->log('Payment Result Code: ' . $payment_data['resultCode']);
-            }
-            if (isset($payment_data['pspReference'])) {
-                $this->log('PSP Reference: ' . $payment_data['pspReference']);
-            }
-        }
-
-        if (!$payment_data) {
-            $this->log('ERROR: Payment data is missing from POST request');
-            $this->log('POST keys available: ' . implode(', ', array_keys($_POST)));
-            wc_add_notice(__('Payment data missing. Please try again.', 'adyen-apple-pay'), 'error');
-            return array('result' => 'fail');
-        }
-
-        // Check if this is a session-based payment (already processed by Adyen)
-        if (isset($payment_data['resultCode']) && isset($payment_data['pspReference'])) {
-            $this->log('Session-based payment detected - payment already processed by Adyen');
-
-            $result_code = $payment_data['resultCode'];
-            $psp_reference = $payment_data['pspReference'];
-
-            $this->log('Result Code: ' . $result_code);
-            $this->log('PSP Reference: ' . $psp_reference);
-
-            if (in_array($result_code, array('Authorised', 'Pending'))) {
-                $this->log('Payment Successful - PSP Reference: ' . $psp_reference);
-
-                $order->payment_complete($psp_reference);
-                $order->add_order_note(
-                    sprintf(__('Adyen Apple Pay payment completed. PSP Reference: %s, Result: %s', 'adyen-apple-pay'),
-                        $psp_reference,
-                        $result_code
-                    )
-                );
-
-                $this->log('Order marked as payment complete. Emptying cart...');
-                WC()->cart->empty_cart();
-
-                $return_url = $this->get_return_url($order);
-                $this->log('Redirecting to: ' . $return_url);
-                $this->log('========== PROCESSING PAYMENT END (SUCCESS) ==========');
-
-                return array(
-                    'result' => 'success',
-                    'redirect' => $return_url
-                );
-            } else {
-                $this->log('Payment not successful - Result Code: ' . $result_code);
-                $order->add_order_note(
-                    sprintf(__('Adyen payment failed: %s', 'adyen-apple-pay'), $result_code)
-                );
-                wc_add_notice(__('Payment was not successful. Please try again.', 'adyen-apple-pay'), 'error');
-                $this->log('========== PROCESSING PAYMENT END (FAILED) ==========');
-                return array('result' => 'fail');
-            }
-        }
-
-        // Fallback: Traditional payment flow (for compatibility)
-        $this->log('Traditional payment flow - processing via API');
+        // Create API instance
         $this->log('Creating API instance - Merchant: ' . $this->merchant_account . ', Test Mode: ' . ($this->testmode ? 'Yes' : 'No'));
         $api = new Adyen_API($this->api_key, $this->merchant_account, $this->testmode, $this->live_url_prefix);
 
-        $this->log('Calling Adyen API to process payment...');
-        $result = $api->process_payment($order, $payment_data);
+        // Prepare order data for session creation
+        $order_data = array(
+            'amount' => array(
+                'currency' => $order->get_currency(),
+                'value' => $api->format_amount($order->get_total(), $order->get_currency())
+            ),
+            'reference' => $order->get_order_number(),
+            'returnUrl' => add_query_arg('wc-api', 'adyen_apple_pay_return', home_url('/')),
+            'countryCode' => $order->get_billing_country() ?: 'US',
+            'shopperEmail' => $order->get_billing_email()
+        );
 
-        $this->log('API Response Received - Success: ' . ($result['success'] ? 'Yes' : 'No'));
+        $this->log('Creating hosted payment session...');
+        $this->log('Return URL: ' . $order_data['returnUrl']);
 
-        if ($result['success']) {
-            $this->log('Payment Successful - PSP Reference: ' . $result['psp_reference']);
+        $session = $api->create_session($order_data);
 
-            $order->payment_complete($result['psp_reference']);
-            $order->add_order_note(
-                sprintf(__('Adyen payment completed. PSP Reference: %s', 'adyen-apple-pay'), $result['psp_reference'])
-            );
+        if ($session && isset($session['id']) && isset($session['sessionData'])) {
+            $this->log('Session created successfully - Session ID: ' . $session['id']);
 
-            $this->log('Order marked as payment complete. Emptying cart...');
-            WC()->cart->empty_cart();
+            // Store session ID with order for later verification
+            $order->update_meta_data('_adyen_session_id', $session['id']);
+            $order->save();
 
-            $return_url = $this->get_return_url($order);
-            $this->log('Redirecting to: ' . $return_url);
-            $this->log('========== PROCESSING PAYMENT END (SUCCESS) ==========');
+            // Build redirect URL to Adyen's hosted payment page
+            $redirect_url = add_query_arg(array(
+                'sessionId' => $session['id'],
+                'sessionData' => urlencode($session['sessionData']),
+                'order_id' => $order_id,
+                'key' => $order->get_order_key()
+            ), wc_get_checkout_url() . '/adyen-redirect/');
+
+            $this->log('Redirecting to Adyen hosted page');
+            $this->log('========== PROCESSING PAYMENT END (REDIRECT) ==========');
 
             return array(
                 'result' => 'success',
-                'redirect' => $return_url
+                'redirect' => $redirect_url
             );
         } else {
-            $error_message = isset($result['message']) ? $result['message'] : 'Unknown error';
-            $this->log('Payment Failed - Error: ' . $error_message);
-
-            if (isset($result['result_code'])) {
-                $this->log('Result Code: ' . $result['result_code']);
+            $this->log('ERROR: Failed to create payment session');
+            if ($session) {
+                $this->log('Session Response: ' . json_encode($session));
             }
 
-            $order->add_order_note(
-                sprintf(__('Adyen payment failed: %s', 'adyen-apple-pay'), $error_message)
-            );
+            $order->add_order_note(__('Failed to create Adyen payment session', 'adyen-apple-pay'));
+            wc_add_notice(__('Unable to initiate payment. Please try again.', 'adyen-apple-pay'), 'error');
 
-            wc_add_notice($error_message, 'error');
             $this->log('========== PROCESSING PAYMENT END (FAILED) ==========');
-
             return array('result' => 'fail');
         }
     }
@@ -409,6 +359,96 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
     public function webhook_handler() {
         $handler = new Adyen_Webhook_Handler($this->merchant_account);
         $handler->process();
+    }
+
+    public function return_handler() {
+        $this->log('========== RETURN HANDLER START ==========');
+
+        // Get parameters from the return URL
+        $session_id = isset($_GET['sessionId']) ? sanitize_text_field($_GET['sessionId']) : '';
+        $session_result = isset($_GET['sessionResult']) ? sanitize_text_field($_GET['sessionResult']) : '';
+        $redirect_result = isset($_GET['redirectResult']) ? sanitize_text_field($_GET['redirectResult']) : '';
+
+        $this->log('Session ID: ' . $session_id);
+        $this->log('Session Result: ' . ($session_result ? 'Present' : 'Not present'));
+        $this->log('Redirect Result: ' . ($redirect_result ? 'Present' : 'Not present'));
+
+        // Find the order by session ID
+        $orders = wc_get_orders(array(
+            'limit' => 1,
+            'meta_key' => '_adyen_session_id',
+            'meta_value' => $session_id,
+            'return' => 'objects'
+        ));
+
+        if (empty($orders)) {
+            $this->log('ERROR: No order found for session ID: ' . $session_id);
+            wc_add_notice(__('Payment session not found', 'adyen-apple-pay'), 'error');
+            wp_redirect(wc_get_checkout_url());
+            exit;
+        }
+
+        $order = $orders[0];
+        $this->log('Order found: ' . $order->get_id());
+
+        // Check if payment already processed
+        if ($order->is_paid()) {
+            $this->log('Order already paid, redirecting to success page');
+            wp_redirect($this->get_return_url($order));
+            exit;
+        }
+
+        // Parse the session result to get payment status
+        if ($session_result) {
+            $result_data = json_decode(base64_decode($session_result), true);
+
+            if ($result_data && isset($result_data['resultCode'])) {
+                $result_code = $result_data['resultCode'];
+                $psp_reference = isset($result_data['pspReference']) ? $result_data['pspReference'] : '';
+
+                $this->log('Result Code: ' . $result_code);
+                $this->log('PSP Reference: ' . $psp_reference);
+
+                if (in_array($result_code, array('Authorised', 'Pending'))) {
+                    $this->log('Payment successful');
+
+                    $order->payment_complete($psp_reference);
+                    $order->add_order_note(
+                        sprintf(__('Adyen Apple Pay payment completed. PSP Reference: %s, Result: %s', 'adyen-apple-pay'),
+                            $psp_reference,
+                            $result_code
+                        )
+                    );
+
+                    WC()->cart->empty_cart();
+
+                    $this->log('Redirecting to order received page');
+                    $this->log('========== RETURN HANDLER END (SUCCESS) ==========');
+
+                    wp_redirect($this->get_return_url($order));
+                    exit;
+                } else {
+                    $this->log('Payment failed: ' . $result_code);
+
+                    $order->update_status('failed', sprintf(__('Payment failed: %s', 'adyen-apple-pay'), $result_code));
+
+                    wc_add_notice(__('Payment was not successful. Please try again.', 'adyen-apple-pay'), 'error');
+
+                    $this->log('========== RETURN HANDLER END (FAILED) ==========');
+
+                    wp_redirect(wc_get_checkout_url());
+                    exit;
+                }
+            }
+        }
+
+        // If we get here, something went wrong
+        $this->log('ERROR: Unable to process payment result');
+        $this->log('========== RETURN HANDLER END (ERROR) ==========');
+
+        wc_add_notice(__('Unable to verify payment status. Please contact support.', 'adyen-apple-pay'), 'error');
+        wp_redirect(wc_get_checkout_url());
+        exit;
     }
 
     public function ajax_create_session() {

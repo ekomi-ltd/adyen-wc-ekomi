@@ -1,0 +1,424 @@
+# German translation for Adyen Apple Pay for WooCommerce
+# Copyright (C) 2024 Product @ eKomi
+# This file is distributed under the same license as the Adyen Apple Pay package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Adyen Apple Pay for WooCommerce 1.1.5\n"
+"Report-Msgid-Bugs-To: https://ekomi.de\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: Product @ eKomi\n"
+"Language-Team: German\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Plugin metadata
+msgid "Adyen Apple Pay for WooCommerce"
+msgstr "Adyen Apple Pay für WooCommerce"
+
+msgid "Accept Apple Pay payments through Adyen in your WooCommerce store"
+msgstr "Akzeptieren Sie Apple Pay-Zahlungen über Adyen in Ihrem WooCommerce-Shop"
+
+# Main plugin file
+msgid "Adyen Apple Pay requires WooCommerce to be installed and active."
+msgstr "Adyen Apple Pay benötigt WooCommerce, um installiert und aktiv zu sein."
+
+msgid "Invalid payment session parameters"
+msgstr "Ungültige Zahlungssitzungsparameter"
+
+msgid "Invalid order"
+msgstr "Ungültige Bestellung"
+
+msgid "Payment gateway not available"
+msgstr "Zahlungsgateway nicht verfügbar"
+
+msgid "Complete Your Payment"
+msgstr "Schließen Sie Ihre Zahlung ab"
+
+msgid "Please complete your Apple Pay payment below"
+msgstr "Bitte schließen Sie Ihre Apple Pay-Zahlung unten ab"
+
+msgid "Order Number:"
+msgstr "Bestellnummer:"
+
+msgid "Total:"
+msgstr "Gesamt:"
+
+msgid "Loading payment method..."
+msgstr "Zahlungsmethode wird geladen..."
+
+msgid "Payment failed. Please try again."
+msgstr "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut."
+
+# Gateway class
+msgid "Adyen Apple Pay"
+msgstr "Adyen Apple Pay"
+
+msgid "Accept Apple Pay payments through Adyen"
+msgstr "Akzeptieren Sie Apple Pay-Zahlungen über Adyen"
+
+msgid "Safety Information"
+msgstr "Sicherheitsinformationen"
+
+msgid "Current Configuration"
+msgstr "Aktuelle Konfiguration"
+
+msgid "Enable/Disable"
+msgstr "Aktivieren/Deaktivieren"
+
+msgid "Enable Adyen Apple Pay"
+msgstr "Adyen Apple Pay aktivieren"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "Payment method title that customers see during checkout"
+msgstr "Titel der Zahlungsmethode, den Kunden beim Checkout sehen"
+
+msgid "Apple Pay"
+msgstr "Apple Pay"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Payment method description that customers see during checkout"
+msgstr "Beschreibung der Zahlungsmethode, die Kunden beim Checkout sehen"
+
+msgid "Pay securely with Apple Pay. Fast, secure, and private - using the payment cards you already have in your Apple Wallet."
+msgstr "Bezahlen Sie sicher mit Apple Pay. Schnell, sicher und privat - mit den Zahlungskarten, die Sie bereits in Ihrer Apple Wallet haben."
+
+msgid "Test Mode"
+msgstr "Testmodus"
+
+msgid "Enable Test Mode"
+msgstr "Testmodus aktivieren"
+
+msgid "Use Adyen test environment for testing"
+msgstr "Verwenden Sie die Adyen-Testumgebung zum Testen"
+
+msgid "Merchant Account"
+msgstr "Händlerkonto"
+
+msgid "Your Adyen merchant account name"
+msgstr "Ihr Adyen-Händlerkontoname"
+
+msgid "Test API Key"
+msgstr "Test-API-Schlüssel"
+
+msgid "Your Adyen test API key"
+msgstr "Ihr Adyen-Test-API-Schlüssel"
+
+msgid "Test Client Key"
+msgstr "Test-Client-Schlüssel"
+
+msgid "Your Adyen test client key"
+msgstr "Ihr Adyen-Test-Client-Schlüssel"
+
+msgid "Live API Key"
+msgstr "Live-API-Schlüssel"
+
+msgid "Your Adyen live API key"
+msgstr "Ihr Adyen-Live-API-Schlüssel"
+
+msgid "Live Client Key"
+msgstr "Live-Client-Schlüssel"
+
+msgid "Your Adyen live client key"
+msgstr "Ihr Adyen-Live-Client-Schlüssel"
+
+msgid "Live URL Prefix"
+msgstr "Live-URL-Präfix"
+
+msgid "Your Adyen live URL prefix (e.g., \"1797a841fbb37ca7-AdyenDemo\" from https://1797a841fbb37ca7-AdyenDemo-checkout-live.adyenpayments.com/checkout)"
+msgstr "Ihr Adyen-Live-URL-Präfix (z.B. \"1797a841fbb37ca7-AdyenDemo\" aus https://1797a841fbb37ca7-AdyenDemo-checkout-live.adyenpayments.com/checkout)"
+
+msgid "Debug Log"
+msgstr "Debug-Protokoll"
+
+msgid "Enable logging"
+msgstr "Protokollierung aktivieren"
+
+msgid "Log events to %s"
+msgstr "Ereignisse in %s protokollieren"
+
+msgid "On-Screen Debug Console"
+msgstr "Bildschirm-Debug-Konsole"
+
+msgid "Show debug console on checkout page"
+msgstr "Debug-Konsole auf der Checkout-Seite anzeigen"
+
+msgid "Display a floating debug console on the checkout page. Useful for debugging on mobile devices (iPhone/iPad). Only visible to logged-in administrators."
+msgstr "Eine schwebende Debug-Konsole auf der Checkout-Seite anzeigen. Nützlich zum Debuggen auf mobilen Geräten (iPhone/iPad). Nur für angemeldete Administratoren sichtbar."
+
+msgid "Order not found"
+msgstr "Bestellung nicht gefunden"
+
+msgid "Awaiting Adyen Apple Pay payment"
+msgstr "Warten auf Adyen Apple Pay-Zahlung"
+
+msgid "Failed to create Adyen payment session"
+msgstr "Adyen-Zahlungssitzung konnte nicht erstellt werden"
+
+msgid "Unable to initiate payment. Please try again."
+msgstr "Zahlung konnte nicht initiiert werden. Bitte versuchen Sie es erneut."
+
+msgid "This order was not paid through Adyen Apple Pay and cannot be refunded by this gateway."
+msgstr "Diese Bestellung wurde nicht über Adyen Apple Pay bezahlt und kann nicht über dieses Gateway erstattet werden."
+
+msgid "Transaction ID not found"
+msgstr "Transaktions-ID nicht gefunden"
+
+msgid "Refund of %s processed via Adyen. Reference: %s"
+msgstr "Rückerstattung von %s über Adyen verarbeitet. Referenz: %s"
+
+msgid "Payment session not found"
+msgstr "Zahlungssitzung nicht gefunden"
+
+msgid "Adyen Apple Pay payment completed. PSP Reference: %s, Result: %s"
+msgstr "Adyen Apple Pay-Zahlung abgeschlossen. PSP-Referenz: %s, Ergebnis: %s"
+
+msgid "Payment failed: %s"
+msgstr "Zahlung fehlgeschlagen: %s"
+
+msgid "Payment was not successful. Please try again."
+msgstr "Zahlung war nicht erfolgreich. Bitte versuchen Sie es erneut."
+
+msgid "Unable to verify payment status. Please contact support."
+msgstr "Zahlungsstatus konnte nicht überprüft werden. Bitte kontaktieren Sie den Support."
+
+msgid "Security verification failed"
+msgstr "Sicherheitsüberprüfung fehlgeschlagen"
+
+msgid "Cart is empty"
+msgstr "Warenkorb ist leer"
+
+msgid "Failed to create payment session"
+msgstr "Zahlungssitzung konnte nicht erstellt werden"
+
+# API class
+msgid "Payment processing failed. Please try again."
+msgstr "Zahlungsverarbeitung fehlgeschlagen. Bitte versuchen Sie es erneut."
+
+msgid "Refund processing failed."
+msgstr "Rückerstattungsverarbeitung fehlgeschlagen."
+
+msgid "Payment was refused. Please try another payment method."
+msgstr "Zahlung wurde abgelehnt. Bitte versuchen Sie eine andere Zahlungsmethode."
+
+msgid "Payment was cancelled."
+msgstr "Zahlung wurde storniert."
+
+msgid "An error occurred during payment processing."
+msgstr "Bei der Zahlungsverarbeitung ist ein Fehler aufgetreten."
+
+msgid "Payment status: %s"
+msgstr "Zahlungsstatus: %s"
+
+msgid "Payment processing failed."
+msgstr "Zahlungsverarbeitung fehlgeschlagen."
+
+# Webhook handler
+msgid "Adyen payment authorised via webhook. PSP Reference: %s"
+msgstr "Adyen-Zahlung über Webhook autorisiert. PSP-Referenz: %s"
+
+msgid "Payment authorisation failed. Reason: %s"
+msgstr "Zahlungsautorisierung fehlgeschlagen. Grund: %s"
+
+msgid "Payment captured via Adyen. PSP Reference: %s"
+msgstr "Zahlung über Adyen erfasst. PSP-Referenz: %s"
+
+msgid "Payment capture failed. PSP Reference: %s"
+msgstr "Zahlungserfassung fehlgeschlagen. PSP-Referenz: %s"
+
+msgid "Refund processed via Adyen webhook. Amount: %s %s, PSP Reference: %s"
+msgstr "Rückerstattung über Adyen-Webhook verarbeitet. Betrag: %s %s, PSP-Referenz: %s"
+
+msgid "Payment cancelled via Adyen. PSP Reference: %s"
+msgstr "Zahlung über Adyen storniert. PSP-Referenz: %s"
+
+msgid "Chargeback received from Adyen. PSP Reference: %s. Please review in your Adyen dashboard."
+msgstr "Rückbuchung von Adyen erhalten. PSP-Referenz: %s. Bitte überprüfen Sie Ihr Adyen-Dashboard."
+
+# Admin class
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Configuration"
+msgstr "Konfiguration"
+
+msgid "Payments"
+msgstr "Zahlungen"
+
+msgid "Logs"
+msgstr "Protokolle"
+
+msgid "Tools"
+msgstr "Werkzeuge"
+
+msgid "Documentation"
+msgstr "Dokumentation"
+
+msgid "Plugin Status"
+msgstr "Plugin-Status"
+
+msgid "Enabled"
+msgstr "Aktiviert"
+
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+msgid "Environment"
+msgstr "Umgebung"
+
+msgid "Live Mode"
+msgstr "Live-Modus"
+
+msgid "Not configured"
+msgstr "Nicht konfiguriert"
+
+msgid "SSL Certificate"
+msgstr "SSL-Zertifikat"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Required!"
+msgstr "Erforderlich!"
+
+msgid "Quick Actions"
+msgstr "Schnellaktionen"
+
+msgid "Configure Plugin"
+msgstr "Plugin konfigurieren"
+
+msgid "View Logs"
+msgstr "Protokolle anzeigen"
+
+msgid "System Requirements"
+msgstr "Systemanforderungen"
+
+msgid "WordPress Version"
+msgstr "WordPress-Version"
+
+msgid "WooCommerce Version"
+msgstr "WooCommerce-Version"
+
+msgid "PHP Version"
+msgstr "PHP-Version"
+
+msgid "Not Active"
+msgstr "Nicht aktiv"
+
+msgid "cURL Enabled"
+msgstr "cURL aktiviert"
+
+msgid "Yes"
+msgstr "Ja"
+
+msgid "No"
+msgstr "Nein"
+
+msgid "Gateway not found."
+msgstr "Gateway nicht gefunden."
+
+msgid "Settings saved successfully!"
+msgstr "Einstellungen erfolgreich gespeichert!"
+
+msgid "Quick Access:"
+msgstr "Schnellzugriff:"
+
+msgid "Open in WooCommerce Settings"
+msgstr "In WooCommerce-Einstellungen öffnen"
+
+msgid "Save Changes"
+msgstr "Änderungen speichern"
+
+msgid "Cache cleared successfully!"
+msgstr "Cache erfolgreich geleert!"
+
+msgid "Test API Connection"
+msgstr "API-Verbindung testen"
+
+msgid "Test your connection to Adyen API to ensure credentials are correct."
+msgstr "Testen Sie Ihre Verbindung zur Adyen-API, um sicherzustellen, dass die Anmeldedaten korrekt sind."
+
+msgid "Test Connection"
+msgstr "Verbindung testen"
+
+msgid "Clear Cache"
+msgstr "Cache leeren"
+
+msgid "Clear all cached data related to Adyen Apple Pay."
+msgstr "Alle zwischengespeicherten Daten zu Adyen Apple Pay löschen."
+
+msgid "System Information"
+msgstr "Systeminformationen"
+
+msgid "Copy system information for support requests."
+msgstr "Systeminformationen für Support-Anfragen kopieren."
+
+msgid "Copy to Clipboard"
+msgstr "In Zwischenablage kopieren"
+
+msgid "Testing..."
+msgstr "Teste..."
+
+msgid "Testing connection to Adyen API..."
+msgstr "Verbindung zur Adyen-API wird getestet..."
+
+msgid "Mode:"
+msgstr "Modus:"
+
+msgid "Connection test failed. Please check your settings."
+msgstr "Verbindungstest fehlgeschlagen. Bitte überprüfen Sie Ihre Einstellungen."
+
+msgid "Getting Started"
+msgstr "Erste Schritte"
+
+msgid "Adyen Apple Pay Documentation"
+msgstr "Adyen Apple Pay-Dokumentation"
+
+msgid "Build Your Integration"
+msgstr "Erstellen Sie Ihre Integration"
+
+msgid "Testing Guide"
+msgstr "Test-Leitfaden"
+
+msgid "Get API Credentials"
+msgstr "API-Anmeldedaten erhalten"
+
+msgid "Enable Apple Pay"
+msgstr "Apple Pay aktivieren"
+
+msgid "Configure Webhooks"
+msgstr "Webhooks konfigurieren"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Developed by Product @ eKomi"
+msgstr "Entwickelt von Product @ eKomi"
+
+msgid "Visit eKomi Website"
+msgstr "eKomi-Website besuchen"
+
+msgid "Gateway not configured."
+msgstr "Gateway nicht konfiguriert."
+
+msgid "API credentials not configured. Please configure your API Key and Merchant Account first."
+msgstr "API-Anmeldedaten nicht konfiguriert. Bitte konfigurieren Sie zuerst Ihren API-Schlüssel und Ihr Händlerkonto."
+
+msgid "Connection failed: %s"
+msgstr "Verbindung fehlgeschlagen: %s"
+
+msgid "Connection successful! Your Adyen API credentials are working correctly."
+msgstr "Verbindung erfolgreich! Ihre Adyen-API-Anmeldedaten funktionieren korrekt."
+
+msgid "Unexpected response from Adyen API. Please check your credentials."
+msgstr "Unerwartete Antwort von der Adyen-API. Bitte überprüfen Sie Ihre Anmeldedaten."
+
+msgid "Connection error: %s"
+msgstr "Verbindungsfehler: %s"

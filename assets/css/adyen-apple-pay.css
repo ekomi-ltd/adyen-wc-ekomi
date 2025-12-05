@@ -1,7 +1,13 @@
 /* Hide Apple Pay payment method by default until JavaScript confirms availability */
 .payment_method_adyen_apple_pay,
 li.wc_payment_method.payment_method_adyen_apple_pay {
-    display: none !important;
+    display: none;
+}
+
+/* When Apple Pay is available, JavaScript will add this class to show the method */
+.payment_method_adyen_apple_pay.adyen-available,
+li.wc_payment_method.payment_method_adyen_apple_pay.adyen-available {
+    display: block !important;
 }
 
 /* Button container styles */
