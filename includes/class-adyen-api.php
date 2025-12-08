@@ -187,6 +187,67 @@ class Adyen_API {
         return $response;
     }
 
+    public function get_session_details($session_id) {
+        $this->log('--- Adyen API: Get Session Details ---');
+        $this->log('Session ID: ' . $session_id);
+
+        $endpoint = $this->base_url . '/sessions/' . $session_id;
+        $this->log('Endpoint: ' . $endpoint);
+
+        $args = array(
+            'method' => 'GET',
+            'headers' => array(
+                'Content-Type' => 'application/json',
+                'X-API-Key' => $this->api_key
+            ),
+            'timeout' => 30
+        );
+
+        $this->log('Making GET request to fetch session details...');
+        $start_time = microtime(true);
+        $response = wp_remote_get($endpoint, $args);
+        $duration = round((microtime(true) - $start_time) * 1000, 2);
+
+        $this->log('Request completed in ' . $duration . 'ms');
+
+        if (is_wp_error($response)) {
+            $this->log('ERROR: HTTP Request Failed');
+            $this->log('Error Code: ' . $response->get_error_code());
+            $this->log('Error Message: ' . $response->get_error_message());
+            return false;
+        }
+
+        $http_code = wp_remote_retrieve_response_code($response);
+        $this->log('HTTP Response Code: ' . $http_code);
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $this->log('ERROR: JSON Decode Failed - ' . json_last_error_msg());
+            return false;
+        }
+
+        if (isset($data['status'])) {
+            $this->log('Session Status: ' . $data['status']);
+        }
+
+        // Extract payment result if available
+        if (isset($data['paymentResult'])) {
+            $this->log('Payment Result Available:');
+            if (isset($data['paymentResult']['resultCode'])) {
+                $this->log('- Result Code: ' . $data['paymentResult']['resultCode']);
+            }
+            if (isset($data['paymentResult']['pspReference'])) {
+                $this->log('- PSP Reference: ' . $data['paymentResult']['pspReference']);
+            }
+        } else {
+            $this->log('Payment Result: Not yet available');
+        }
+
+        return $data;
+    }
+
     private function make_request($endpoint, $payload) {
         $this->log('Making HTTP Request to: ' . $endpoint);
 

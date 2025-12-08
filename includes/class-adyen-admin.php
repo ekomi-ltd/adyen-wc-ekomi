@@ -21,13 +21,14 @@ class Adyen_Apple_Pay_Admin {
 
         // AJAX handlers
         add_action('wp_ajax_adyen_test_connection', array($this, 'ajax_test_connection'));
+        add_action('wp_ajax_adyen_test_webhook', array($this, 'ajax_test_webhook'));
     }
 
     public function add_admin_menu() {
         // Main menu
         add_menu_page(
-            __('Adyen Apple Pay', 'adyen-apple-pay'),
-            __('Adyen Apple Pay', 'adyen-apple-pay'),
+            __('Adyen eKomi', 'adyen-apple-pay'),
+            __('Adyen eKomi', 'adyen-apple-pay'),
             'manage_woocommerce',
             'adyen-apple-pay',
             array($this, 'render_dashboard'),
@@ -349,7 +350,7 @@ class Adyen_Apple_Pay_Admin {
                     <!-- Clear Cache -->
                     <div class="adyen-tool-box">
                         <h3><span class="dashicons dashicons-trash"></span> <?php _e('Clear Cache', 'adyen-apple-pay'); ?></h3>
-                        <p><?php _e('Clear all cached data related to Adyen Apple Pay.', 'adyen-apple-pay'); ?></p>
+                        <p><?php _e('Clear all cached data related to Adyen eKomi.', 'adyen-apple-pay'); ?></p>
                         <form method="post">
                             <?php wp_nonce_field('adyen_tools', 'adyen_tools_nonce'); ?>
                             <button type="submit" name="clear_cache" class="button">
@@ -453,7 +454,7 @@ SSL: <?php echo is_ssl() ? 'Yes' : 'No'; ?>
                         <h3><?php _e('Getting Started', 'adyen-apple-pay'); ?></h3>
                         <ul>
                             <li><a href="https://docs.adyen.com/payment-methods/apple-pay/web-drop-in" target="_blank">
-                                <?php _e('Adyen Apple Pay Documentation', 'adyen-apple-pay'); ?> ↗
+                                <?php _e('Adyen eKomi Documentation', 'adyen-apple-pay'); ?> ↗
                             </a></li>
                             <li><a href="https://docs.adyen.com/online-payments/build-your-integration" target="_blank">
                                 <?php _e('Build Your Integration', 'adyen-apple-pay'); ?> ↗
@@ -499,7 +500,7 @@ SSL: <?php echo is_ssl() ? 'Yes' : 'No'; ?>
         <div class="adyen-admin-header">
             <div class="adyen-admin-logo">
                 <img src="https://www.ekomi.de/de/wp-content/uploads/2015/11/logo_header1.png" alt="eKomi" style="height: 40px;">
-                <h1><?php _e('Adyen Apple Pay for WooCommerce', 'adyen-apple-pay'); ?></h1>
+                <h1><?php _e('Adyen eKomi for WooCommerce', 'adyen-apple-pay'); ?></h1>
                 <span class="adyen-version">v<?php echo ADYEN_APPLE_PAY_VERSION; ?></span>
             </div>
         </div>
@@ -648,6 +649,89 @@ SSL: <?php echo is_ssl() ? 'Yes' : 'No'; ?>
                 'message' => sprintf(
                     __('Connection error: %s', 'adyen-apple-pay'),
                     $e->getMessage()
+                )
+            ));
+        }
+    }
+
+    public function ajax_test_webhook() {
+        check_ajax_referer('adyen_test_webhook', 'nonce');
+
+        $gateway = $this->get_gateway();
+
+        if (!$gateway) {
+            wp_send_json_error(array(
+                'message' => __('Gateway not configured.', 'adyen-apple-pay')
+            ));
+        }
+
+        $webhook_username = $gateway->get_option('webhook_username');
+        $webhook_password = $gateway->get_option('webhook_password');
+
+        if (empty($webhook_username) || empty($webhook_password)) {
+            wp_send_json_error(array(
+                'message' => __('Webhook credentials not configured. Please save your settings first.', 'adyen-apple-pay')
+            ));
+        }
+
+        $webhook_url = add_query_arg('wc-api', 'adyen_apple_pay_webhook', home_url('/'));
+
+        // Create test webhook payload (Adyen format)
+        $test_payload = array(
+            'live' => 'false',
+            'notificationItems' => array(
+                array(
+                    'NotificationRequestItem' => array(
+                        'eventCode' => 'AUTHORISATION',
+                        'success' => 'true',
+                        'pspReference' => 'TEST_' . time(),
+                        'merchantReference' => 'WEBHOOK_TEST',
+                        'merchantAccountCode' => $gateway->get_option('merchant_account'),
+                        'amount' => array(
+                            'currency' => 'EUR',
+                            'value' => 1000
+                        )
+                    )
+                )
+            )
+        );
+
+        // Send test webhook request with Basic Auth
+        $response = wp_remote_post($webhook_url, array(
+            'timeout' => 15,
+            'headers' => array(
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Basic ' . base64_encode($webhook_username . ':' . $webhook_password)
+            ),
+            'body' => json_encode($test_payload)
+        ));
+
+        if (is_wp_error($response)) {
+            wp_send_json_error(array(
+                'message' => sprintf(
+                    __('Webhook test failed: %s', 'adyen-apple-pay'),
+                    $response->get_error_message()
+                )
+            ));
+        }
+
+        $response_code = wp_remote_retrieve_response_code($response);
+        $response_body = wp_remote_retrieve_body($response);
+
+        if ($response_code === 200 && $response_body === '[accepted]') {
+            wp_send_json_success(array(
+                'message' => __('Webhook test successful! Your webhook endpoint is working correctly with Basic Authentication.', 'adyen-apple-pay')
+            ));
+        } else if ($response_code === 401) {
+            wp_send_json_error(array(
+                'message' => __('Webhook authentication failed. Please check your webhook username and password.', 'adyen-apple-pay')
+            ));
+        } else {
+            wp_send_json_error(array(
+                'message' => sprintf(
+                    __('Webhook test failed with HTTP code %d. Response: %s', 'adyen-apple-pay'),
+                    $response_code,
+                    substr($response_body, 0, 200)
                 )
             ));
         }

@@ -10,7 +10,7 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
         $this->id = 'adyen_apple_pay';
         $this->icon = ADYEN_APPLE_PAY_PLUGIN_URL . 'assets/images/apple-pay-mark.svg';
         $this->has_fields = false;
-        $this->method_title = __('Adyen Apple Pay', 'adyen-apple-pay');
+        $this->method_title = __('Adyen eKomi', 'adyen-apple-pay');
         $this->method_description = __('Accept Apple Pay payments through Adyen', 'adyen-apple-pay');
         $this->supports = array(
             'products',
@@ -65,7 +65,7 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
             'enabled' => array(
                 'title' => __('Enable/Disable', 'adyen-apple-pay'),
                 'type' => 'checkbox',
-                'label' => __('Enable Adyen Apple Pay', 'adyen-apple-pay'),
+                'label' => __('Enable Adyen eKomi', 'adyen-apple-pay'),
                 'default' => 'no'
             ),
             'title' => array(
@@ -126,6 +126,39 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
                 'desc_tip' => true,
                 'placeholder' => '1797a841fbb37ca7-YourCompanyName'
             ),
+            'webhook_section' => array(
+                'title' => __('Webhook Configuration', 'adyen-apple-pay'),
+                'type' => 'title',
+                'description' => '<div style="background: #f0f6fc; border-left: 4px solid #0073aa; padding: 15px; margin: 10px 0;">' .
+                    '<strong>' . __('Webhook URL:', 'adyen-apple-pay') . '</strong><br>' .
+                    '<code style="font-size: 13px; background: #fff; padding: 5px 10px; display: inline-block; margin: 5px 0;">' .
+                    add_query_arg('wc-api', 'adyen_apple_pay_webhook', home_url('/')) . '</code><br>' .
+                    '<small>' . __('Copy this URL and add it to your Adyen Dashboard → Developers → Webhooks', 'adyen-apple-pay') . '</small><br><br>' .
+                    '<strong>' . __('Important:', 'adyen-apple-pay') . '</strong> ' .
+                    __('Configure Basic Authentication in Adyen webhooks using the username and password below for security.', 'adyen-apple-pay') .
+                    '</div>'
+            ),
+            'webhook_username' => array(
+                'title' => __('Webhook Username', 'adyen-apple-pay'),
+                'type' => 'text',
+                'description' => __('Basic Auth username for webhook security. Use this in Adyen webhook configuration.', 'adyen-apple-pay'),
+                'desc_tip' => true,
+                'default' => 'adyen_webhook_' . substr(md5(home_url()), 0, 8)
+            ),
+            'webhook_password' => array(
+                'title' => __('Webhook Password', 'adyen-apple-pay'),
+                'type' => 'password',
+                'description' => __('Basic Auth password for webhook security. Use this in Adyen webhook configuration.', 'adyen-apple-pay'),
+                'desc_tip' => true,
+                'default' => wp_generate_password(24, false)
+            ),
+            'webhook_hmac_key' => array(
+                'title' => __('Webhook HMAC Key', 'adyen-apple-pay'),
+                'type' => 'password',
+                'description' => __('HMAC key for webhook signature verification. Find this in your Adyen webhook settings under "Additional Settings".', 'adyen-apple-pay'),
+                'desc_tip' => true,
+                'placeholder' => 'Get from Adyen Dashboard → Webhooks → Edit → Additional Settings'
+            ),
             'debug' => array(
                 'title' => __('Debug Log', 'adyen-apple-pay'),
                 'type' => 'checkbox',
@@ -147,36 +180,36 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
     }
 
     public function is_available() {
-        $this->log('=== Adyen Apple Pay: Checking if gateway is available ===');
+        $this->log('=== Adyen eKomi: Checking if gateway is available ===');
 
         $is_available = parent::is_available();
-        $this->log('Adyen Apple Pay: Parent is_available check: ' . ($is_available ? 'PASSED' : 'FAILED'));
-        $this->log('Adyen Apple Pay: Gateway enabled setting: ' . $this->enabled);
+        $this->log('Adyen eKomi: Parent is_available check: ' . ($is_available ? 'PASSED' : 'FAILED'));
+        $this->log('Adyen eKomi: Gateway enabled setting: ' . $this->enabled);
 
         if (!$is_available) {
-            $this->log('Adyen Apple Pay: Gateway NOT available - parent check failed');
+            $this->log('Adyen eKomi: Gateway NOT available - parent check failed');
             return false;
         }
 
         if (empty($this->merchant_account)) {
-            $this->log('Adyen Apple Pay: Gateway NOT available - Merchant Account is EMPTY');
+            $this->log('Adyen eKomi: Gateway NOT available - Merchant Account is EMPTY');
             return false;
         }
-        $this->log('Adyen Apple Pay: Merchant Account: ' . substr($this->merchant_account, 0, 10) . '...');
+        $this->log('Adyen eKomi: Merchant Account: ' . substr($this->merchant_account, 0, 10) . '...');
 
         if (empty($this->api_key)) {
-            $this->log('Adyen Apple Pay: Gateway NOT available - API Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
+            $this->log('Adyen eKomi: Gateway NOT available - API Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
             return false;
         }
-        $this->log('Adyen Apple Pay: API Key: ' . substr($this->api_key, 0, 10) . '... (length: ' . strlen($this->api_key) . ')');
+        $this->log('Adyen eKomi: API Key: ' . substr($this->api_key, 0, 10) . '... (length: ' . strlen($this->api_key) . ')');
 
         if (empty($this->client_key)) {
-            $this->log('Adyen Apple Pay: Gateway NOT available - Client Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
+            $this->log('Adyen eKomi: Gateway NOT available - Client Key is EMPTY (Test Mode: ' . ($this->testmode ? 'YES' : 'NO') . ')');
             return false;
         }
-        $this->log('Adyen Apple Pay: Client Key: ' . substr($this->client_key, 0, 10) . '... (length: ' . strlen($this->client_key) . ')');
+        $this->log('Adyen eKomi: Client Key: ' . substr($this->client_key, 0, 10) . '... (length: ' . strlen($this->client_key) . ')');
 
-        $this->log('Adyen Apple Pay: Gateway IS AVAILABLE - All checks passed!');
+        $this->log('Adyen eKomi: Gateway IS AVAILABLE - All checks passed!');
         return true;
     }
 
@@ -225,7 +258,7 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
         $this->log('Order Details - Number: ' . $order->get_order_number() . ', Total: ' . $order->get_total() . ' ' . $order->get_currency());
 
         // Mark order as pending payment
-        $order->update_status('pending', __('Awaiting Adyen Apple Pay payment', 'adyen-apple-pay'));
+        $order->update_status('pending', __('Awaiting Adyen eKomi payment', 'adyen-apple-pay'));
 
         // Create API instance
         $this->log('Creating API instance - Merchant: ' . $this->merchant_account . ', Test Mode: ' . ($this->testmode ? 'Yes' : 'No'));
@@ -298,8 +331,8 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
         // SAFETY CHECK: Only process refunds for orders paid through THIS gateway
         if ($order->get_payment_method() !== $this->id) {
             $this->log('SAFETY CHECK FAILED: Order payment method is "' . $order->get_payment_method() . '", not "' . $this->id . '"');
-            $this->log('Refund request rejected - order was not paid through Adyen Apple Pay');
-            return new WP_Error('error', __('This order was not paid through Adyen Apple Pay and cannot be refunded by this gateway.', 'adyen-apple-pay'));
+            $this->log('Refund request rejected - order was not paid through Adyen eKomi');
+            return new WP_Error('error', __('This order was not paid through Adyen eKomi and cannot be refunded by this gateway.', 'adyen-apple-pay'));
         }
 
         $this->log('SAFETY CHECK PASSED: Order was paid through this gateway');
@@ -309,7 +342,8 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
 
         if (!$psp_reference) {
             $this->log('ERROR: Transaction ID not found in order');
-            return new WP_Error('error', __('Transaction ID not found', 'adyen-apple-pay'));
+            $error_msg = __('Cannot process refund: Transaction ID not found. This may happen if the payment is still being processed or if the webhook has not been received yet. Please wait a few moments and try again, or check the order status in your Adyen dashboard.', 'adyen-apple-pay');
+            return new WP_Error('error', $error_msg);
         }
 
         $this->log('Creating API instance for refund...');
@@ -392,15 +426,38 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
                 $psp_reference = isset($result_data['pspReference']) ? $result_data['pspReference'] : '';
 
                 $this->log('Result Code: ' . $result_code);
-                $this->log('PSP Reference: ' . $psp_reference);
+                $this->log('PSP Reference from session result: ' . ($psp_reference ? $psp_reference : 'NOT PROVIDED'));
+
+                // If PSP reference not in session result, fetch it from session details
+                if (empty($psp_reference) && in_array($result_code, array('Authorised', 'Pending'))) {
+                    $this->log('PSP Reference missing - querying session details...');
+                    $api = new Adyen_API($this->api_key, $this->merchant_account, $this->testmode, $this->live_url_prefix);
+                    $session_details = $api->get_session_details($session_id);
+
+                    if ($session_details && isset($session_details['paymentResult']['pspReference'])) {
+                        $psp_reference = $session_details['paymentResult']['pspReference'];
+                        $this->log('PSP Reference retrieved from session: ' . $psp_reference);
+                    } else {
+                        $this->log('WARNING: PSP Reference still not available in session details');
+                    }
+                }
 
                 if (in_array($result_code, array('Authorised', 'Pending'))) {
                     $this->log('Payment successful');
 
-                    $order->payment_complete($psp_reference);
+                    // Save PSP reference if we have it
+                    if (!empty($psp_reference)) {
+                        $order->payment_complete($psp_reference);
+                        $this->log('Transaction ID saved: ' . $psp_reference);
+                    } else {
+                        // Complete payment without PSP reference (will be updated via webhook)
+                        $order->payment_complete();
+                        $this->log('WARNING: Payment completed without PSP reference - will be updated via webhook');
+                    }
+
                     $order->add_order_note(
-                        sprintf(__('Adyen Apple Pay payment completed. PSP Reference: %s, Result: %s', 'adyen-apple-pay'),
-                            $psp_reference,
+                        sprintf(__('Adyen eKomi payment completed. PSP Reference: %s, Result: %s', 'adyen-apple-pay'),
+                            $psp_reference ? $psp_reference : __('Pending (will be updated via webhook)', 'adyen-apple-pay'),
                             $result_code
                         )
                     );

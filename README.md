@@ -1,4 +1,4 @@
-# Adyen Apple Pay for WooCommerce
+# Adyen by eKomi
 
 A professional WooCommerce payment gateway plugin that enables Apple Pay payments through Adyen's payment platform.
 
@@ -7,13 +7,17 @@ A professional WooCommerce payment gateway plugin that enables Apple Pay payment
 
 ## Features
 
-- **Seamless Apple Pay Integration**: Native Apple Pay button on checkout page
-- **Adyen Platform**: Secure payment processing through Adyen
+- **Hosted Checkout Integration**: Secure Apple Pay payments via Adyen's hosted payment page
+- **Adyen Platform**: Enterprise-grade payment processing through Adyen
 - **Test & Live Modes**: Easy switching between test and production environments
 - **Refund Support**: Process refunds directly from WooCommerce admin
 - **Webhook Notifications**: Real-time payment status updates from Adyen
+- **Professional Admin Interface**: Custom dashboard with status monitoring and tools
 - **Built-in Log Viewer**: View, download, and manage logs directly in WordPress admin
+- **API Connection Tester**: Test your Adyen credentials with one click
+- **German Language Support**: Full translation (English & German)
 - **Comprehensive Logging**: Detailed debug logs for every step of the payment process
+- **On-Screen Debug Console**: Mobile-friendly debug console for testing (admin only)
 - **HPOS Compatible**: Fully compatible with WooCommerce High-Performance Order Storage (HPOS)
 - **Security First**: Built with WordPress security best practices
 
@@ -63,8 +67,8 @@ Navigate to **WooCommerce > Settings > Payments > Adyen Apple Pay**
 #### Basic Settings
 
 - **Enable/Disable**: Toggle the payment gateway on/off
-- **Title**: Payment method name shown to customers (default: "Apple Pay")
-- **Description**: Payment method description at checkout
+- **Title**: Payment method name shown to customers (default: "Apple Pay - eKomi")
+- **Description**: Payment method description at checkout (default: "Pay securely with Apple Pay via Adyen")
 
 #### Environment Settings
 
@@ -97,9 +101,9 @@ You'll need separate credentials for test and live modes:
 
 - **Debug Log**: Enable comprehensive logging for troubleshooting
   - Logs are stored in WooCommerce > Status > Logs
-  - Look for files starting with `adyen-apple-pay`
+  - Look for files starting with `adyen-ekomi`
   - **Server-side logs** include:
-    - Payment processing flow
+    - Payment processing flow (hosted checkout)
     - Refund operations
     - API requests and responses (with timing)
     - HTTP status codes
@@ -108,34 +112,69 @@ You'll need separate credentials for test and live modes:
     - Webhook notifications
   - **Client-side logs** (Browser Console):
     - Apple Pay availability checks
-    - Session creation
-    - Payment initialization
-    - Authorization flow
-    - Component mounting
+    - Device/browser compatibility
+    - Payment method visibility toggle
+    - JavaScript initialization
     - Error details
 
-## Built-in Log Viewer
+- **On-Screen Debug Console**: Show floating debug console on checkout page
+  - Mobile-friendly debugging for iPhone/iPad testing
+  - Only visible to logged-in administrators
+  - Real-time payment flow monitoring
 
-The plugin includes a powerful log viewer accessible from WordPress admin:
+## Admin Interface
 
-### Features
+The plugin includes a professional admin interface with multiple sections:
 
-- **Easy Access**: Navigate to **WooCommerce > Adyen Apple Pay Logs**
+### Dashboard
+
+Access: **WordPress Admin > Adyen Apple Pay > Dashboard**
+
+Features:
+- **Status Cards**: Plugin status, environment, merchant account, SSL certificate
+- **Quick Actions**: Direct links to configuration, logs, tools, and documentation
+- **System Requirements**: Check WordPress, WooCommerce, PHP, and server compatibility
+
+### Configuration
+
+Access: **WordPress Admin > Adyen Apple Pay > Configuration**
+
+- Edit all payment gateway settings
+- Quick access to WooCommerce payment settings
+- Visual environment indicator (Test/Live mode)
+
+### Logs
+
+Access: **WordPress Admin > Adyen Apple Pay > Logs**
+
+Built-in log viewer features:
 - **File Selection**: Dropdown menu showing all log files with size and date
 - **Smart Display**: Shows last 5000 lines of large files (with line count indicator)
 - **Download Logs**: Download any log file as .log for external analysis
 - **Clear Logs**: Remove all log files with a single click (with confirmation)
 - **Refresh**: Reload logs without leaving the page
 - **Formatted Display**: Monospace font with syntax preservation
-- **No Logs Message**: Helpful message with link to enable debug mode if no logs exist
 
-### Accessing the Log Viewer
+### Tools
 
-1. Go to WordPress Admin
-2. Navigate to **WooCommerce** in the left sidebar
-3. Click **Adyen Apple Pay Logs**
-4. Select a log file from the dropdown
-5. Click "Load Log" to view contents
+Access: **WordPress Admin > Adyen Apple Pay > Tools**
+
+Available tools:
+- **Test API Connection**: Verify Adyen credentials with one click
+  - Tests session creation
+  - Shows current environment (Test/Live)
+  - Displays detailed error messages
+- **Clear Cache**: Clear plugin-related cached data
+- **System Information**: Copy system details for support requests
+
+### Documentation
+
+Access: **WordPress Admin > Adyen Apple Pay > Documentation**
+
+- Quick links to Adyen documentation
+- Apple Pay setup guides
+- Integration resources
+- Support information
 
 ## Getting Your Adyen Credentials
 
@@ -351,7 +390,7 @@ The plugin includes comprehensive logging at every step. To use logs effectively
 
    **Option B: WooCommerce Logs**
    - Go to WooCommerce > Status > Logs
-   - Look for files starting with `adyen-apple-pay`
+   - Look for files starting with `adyen-ekomi`
 
    Logs show:
    - Each API request with endpoint and payload
@@ -450,18 +489,27 @@ For production environments, implement HMAC signature verification:
 ### File Structure
 
 ```
-adyen-apple-pay/
-├── adyen-apple-pay.php          # Main plugin file
+adyen-ekomi/
+├── adyen-ekomi.php                      # Main plugin file
 ├── includes/
-│   ├── class-adyen-apple-pay-gateway.php   # WooCommerce gateway class
-│   ├── class-adyen-api.php                  # Adyen API integration
-│   └── class-adyen-webhook-handler.php      # Webhook processing
+│   ├── class-adyen-ekomi-gateway.php   # WooCommerce gateway class
+│   ├── class-adyen-api.php                  # Adyen API integration (hosted checkout)
+│   ├── class-adyen-webhook-handler.php      # Webhook processing
+│   ├── class-adyen-admin.php                # Admin interface & dashboard
+│   └── class-adyen-log-viewer.php           # Log viewer functionality
 ├── assets/
 │   ├── css/
-│   │   └── adyen-apple-pay.css             # Frontend styles
-│   └── js/
-│       └── adyen-apple-pay.js              # Frontend JavaScript
-└── README.md
+│   │   ├── adyen-ekomi.css             # Frontend styles
+│   │   └── admin.css                        # Admin interface styles
+│   ├── js/
+│   │   └── adyen-ekomi.js              # Frontend JavaScript (hosted checkout)
+│   └── images/
+│       └── apple-pay-mark.svg               # Official Apple Pay icon
+├── languages/
+│   ├── adyen-ekomi-de_DE.po            # German translation source
+│   └── adyen-ekomi-de_DE.mo            # German translation compiled
+├── README.md
+└── SAFETY.md
 ```
 
 ### Hooks and Filters
@@ -482,6 +530,51 @@ add_action('adyen_apple_pay_payment_complete', function($order_id, $psp_referenc
 ```
 
 ## Changelog
+
+### 1.1.7
+- Fixed: Renamed Apple Pay icon file to force cache refresh
+- Updated version to reload assets
+
+### 1.1.6
+- Added official Apple Pay icon/logo
+- Updated default title to "Apple Pay - eKomi"
+- Updated default description to "Pay securely with Apple Pay via Adyen"
+
+### 1.1.5
+- Added full German language support
+- Created translation files (de_DE)
+- Translated all admin and customer-facing strings
+
+### 1.1.4
+- Fixed multilingual checkout URL support
+- Changed from hardcoded `/checkout/` to support `/kasse/` (German) and other languages
+
+### 1.1.3
+- Fixed critical syntax error in main plugin file
+- Removed duplicate version string
+
+### 1.1.2
+- Added professional admin interface
+  - Dashboard with status cards
+  - Configuration page
+  - Log viewer
+  - Tools (API connection tester, system info)
+  - Documentation links
+- Added API connection test tool
+- Improved admin navigation
+
+### 1.1.1
+- Implemented hosted checkout flow (Adyen-hosted payment page)
+- Added on-screen debug console for mobile testing
+- Enhanced logging for session creation
+- Added redirect page handler
+
+### 1.1.0
+- Added comprehensive logging system
+- Built-in log viewer interface
+- HPOS compatibility declaration
+- Enhanced error handling
+- Improved webhook processing
 
 ### 1.0.0
 - Initial release

@@ -180,6 +180,15 @@ msgstr "Diese Bestellung wurde nicht über Adyen Apple Pay bezahlt und kann nich
 msgid "Transaction ID not found"
 msgstr "Transaktions-ID nicht gefunden"
 
+msgid "Cannot process refund: Transaction ID not found. This may happen if the payment is still being processed or if the webhook has not been received yet. Please wait a few moments and try again, or check the order status in your Adyen dashboard."
+msgstr "Rückerstattung kann nicht verarbeitet werden: Transaktions-ID nicht gefunden. Dies kann passieren, wenn die Zahlung noch verarbeitet wird oder der Webhook noch nicht empfangen wurde. Bitte warten Sie einen Moment und versuchen Sie es erneut, oder überprüfen Sie den Bestellstatus in Ihrem Adyen-Dashboard."
+
+msgid "Pending (will be updated via webhook)"
+msgstr "Ausstehend (wird per Webhook aktualisiert)"
+
+msgid "Transaction ID updated via webhook. PSP Reference: %s"
+msgstr "Transaktions-ID per Webhook aktualisiert. PSP-Referenz: %s"
+
 msgid "Refund of %s processed via Adyen. Reference: %s"
 msgstr "Rückerstattung von %s über Adyen verarbeitet. Referenz: %s"
 

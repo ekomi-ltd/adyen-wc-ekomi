@@ -9,12 +9,12 @@ jQuery(document).ready(function($) {
 
         init: function() {
             // Check if params exist
-            if (typeof adyenApplePayParams === 'undefined') {
-                console.warn('[Debug Console] adyenApplePayParams not defined yet');
+            if (typeof adyenEkomiParams === 'undefined') {
+                console.warn('[Debug Console] adyenEkomiParams not defined yet');
                 return;
             }
 
-            if (!adyenApplePayParams.show_debug_console || !adyenApplePayParams.is_admin) {
+            if (!adyenEkomiParams.show_debug_console || !adyenEkomiParams.is_admin) {
                 return;
             }
 
@@ -120,7 +120,7 @@ jQuery(document).ready(function($) {
                 return;
             }
 
-            this.log('========== Adyen Apple Pay Initialization (Hosted Checkout) ==========');
+            this.log('========== Adyen eKomi Initialization (Hosted Checkout) ==========');
             this.log('Plugin Version: 1.1.4');
             this.log('User Language: ' + this.userLang);
 
@@ -142,7 +142,7 @@ jQuery(document).ready(function($) {
         },
 
         log: function(message) {
-            console.log('[Adyen Apple Pay]', message);
+            console.log('[Adyen eKomi]', message);
             DebugConsole.log(message, 'info');
         },
 
@@ -229,14 +229,14 @@ jQuery(document).ready(function($) {
     // Initialize debug console first (with error handling)
     try {
         DebugConsole.init();
-        DebugConsole.log('🚀 Adyen Apple Pay Plugin Loaded (Hosted Checkout)', 'success');
+        DebugConsole.log('🚀 Adyen eKomi Plugin Loaded (Hosted Checkout)', 'success');
     } catch (error) {
-        console.error('[Adyen Apple Pay] Debug console initialization failed:', error);
+        console.error('[Adyen eKomi] Debug console initialization failed:', error);
     }
 
     // Initialize the plugin
     if ($('form.checkout').length) {
-        console.log('[Adyen Apple Pay] Checkout form found - initializing plugin');
+        console.log('[Adyen eKomi] Checkout form found - initializing plugin');
         DebugConsole.log('📱 Checkout form found', 'success');
 
         // Initialize immediately
@@ -244,11 +244,11 @@ jQuery(document).ready(function($) {
 
         // Re-show payment method after checkout updates (WooCommerce refreshes payment methods)
         $(document.body).on('updated_checkout', function() {
-            console.log('[Adyen Apple Pay] Checkout updated event');
+            console.log('[Adyen eKomi] Checkout updated event');
 
             setTimeout(function() {
                 if (AdyenApplePay.initialized && AdyenApplePay.isApplePayAvailable()) {
-                    console.log('[Adyen Apple Pay] Re-showing payment method after checkout update');
+                    console.log('[Adyen eKomi] Re-showing payment method after checkout update');
                     AdyenApplePay.showPaymentMethod();
                 } else if (!AdyenApplePay.initialized) {
                     // Re-initialize if not yet initialized
@@ -258,6 +258,6 @@ jQuery(document).ready(function($) {
         });
 
     } else {
-        console.log('[Adyen Apple Pay] Checkout form not found - plugin not initialized');
+        console.log('[Adyen eKomi] Checkout form not found - plugin not initialized');
     }
 });

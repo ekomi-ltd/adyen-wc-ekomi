@@ -7,14 +7,33 @@ if (!defined('ABSPATH')) {
 class Adyen_Webhook_Handler {
 
     private $merchant_account;
+    private $gateway;
 
     public function __construct($merchant_account) {
         $this->merchant_account = $merchant_account;
+
+        // Get gateway instance for settings
+        $gateways = WC()->payment_gateways()->payment_gateways();
+        if (isset($gateways['adyen_apple_pay'])) {
+            $this->gateway = $gateways['adyen_apple_pay'];
+        }
     }
 
     public function process() {
+        $this->log('========== WEBHOOK RECEIVED ==========');
+
+        // Verify Basic Authentication
+        if (!$this->verify_basic_auth()) {
+            $this->log('ERROR: Basic Authentication failed');
+            status_header(401);
+            header('WWW-Authenticate: Basic realm="Adyen Webhook"');
+            exit('Unauthorized');
+        }
+
+        $this->log('Basic Authentication: PASSED');
+
         $raw_body = file_get_contents('php://input');
-        $this->log('Webhook received: ' . $raw_body);
+        $this->log('Webhook body length: ' . strlen($raw_body) . ' bytes');
 
         $notification = json_decode($raw_body, true);
 
@@ -33,6 +52,12 @@ class Adyen_Webhook_Handler {
 
             if ($notification_item['merchantAccountCode'] !== $this->merchant_account) {
                 $this->log('Merchant account mismatch');
+                continue;
+            }
+
+            // Verify HMAC signature if configured
+            if (!$this->verify_hmac($notification_item)) {
+                $this->log('ERROR: HMAC signature verification failed');
                 continue;
             }
 
@@ -66,15 +91,15 @@ class Adyen_Webhook_Handler {
             return;
         }
 
-        // SAFETY CHECK: Only process webhooks for orders paid through Adyen Apple Pay
+        // SAFETY CHECK: Only process webhooks for orders paid through Adyen eKomi
         $payment_method = $order->get_payment_method();
         if ($payment_method !== 'adyen_apple_pay') {
             $this->log('SAFETY CHECK FAILED: Order payment method is "' . $payment_method . '", not "adyen_apple_pay"');
-            $this->log('Webhook ignored - order was not paid through Adyen Apple Pay');
+            $this->log('Webhook ignored - order was not paid through Adyen eKomi');
             return;
         }
 
-        $this->log('SAFETY CHECK PASSED: Order was paid through Adyen Apple Pay');
+        $this->log('SAFETY CHECK PASSED: Order was paid through Adyen eKomi');
 
         switch ($event_code) {
             case 'AUTHORISATION':
@@ -111,6 +136,17 @@ class Adyen_Webhook_Handler {
                     __('Adyen payment authorised via webhook. PSP Reference: %s', 'adyen-apple-pay'),
                     $notification['pspReference']
                 ));
+            } else {
+                // Order already paid, but update transaction ID if missing
+                if (empty($order->get_transaction_id())) {
+                    $order->set_transaction_id($notification['pspReference']);
+                    $order->save();
+                    $order->add_order_note(sprintf(
+                        __('Transaction ID updated via webhook. PSP Reference: %s', 'adyen-apple-pay'),
+                        $notification['pspReference']
+                    ));
+                    $this->log('Updated missing transaction ID: ' . $notification['pspReference']);
+                }
             }
         } else {
             $order->update_status('failed', sprintf(
@@ -195,6 +231,122 @@ class Adyen_Webhook_Handler {
         }
 
         return $value / 100;
+    }
+
+    private function verify_hmac($notification) {
+        // If no gateway settings available, skip HMAC check
+        if (!$this->gateway) {
+            $this->log('WARNING: Gateway not available, skipping HMAC check');
+            return true;
+        }
+
+        $hmac_key = $this->gateway->get_option('webhook_hmac_key');
+
+        // If HMAC key not configured, skip check (but log warning)
+        if (empty($hmac_key)) {
+            $this->log('WARNING: HMAC key not configured - webhook signature not verified!');
+            return true;
+        }
+
+        // Check if additionalData with hmacSignature exists
+        if (!isset($notification['additionalData']['hmacSignature'])) {
+            $this->log('ERROR: HMAC signature not found in notification');
+            return false;
+        }
+
+        $provided_signature = $notification['additionalData']['hmacSignature'];
+        $this->log('HMAC signature provided: ' . substr($provided_signature, 0, 20) . '...');
+
+        // Build the data string for HMAC calculation (Adyen format)
+        $data_to_sign = $this->get_data_to_sign($notification);
+        $this->log('Data to sign (length): ' . strlen($data_to_sign) . ' bytes');
+
+        // Calculate HMAC signature
+        $binary_hmac_key = pack('H*', $hmac_key);
+        $calculated_signature = base64_encode(hash_hmac('sha256', $data_to_sign, $binary_hmac_key, true));
+
+        $this->log('HMAC signature calculated: ' . substr($calculated_signature, 0, 20) . '...');
+
+        // Compare signatures
+        if (hash_equals($calculated_signature, $provided_signature)) {
+            $this->log('HMAC signature verified successfully');
+            return true;
+        }
+
+        $this->log('ERROR: HMAC signatures do not match');
+        return false;
+    }
+
+    private function get_data_to_sign($notification) {
+        // Keys that should be included in HMAC signature (Adyen standard order)
+        $hmac_keys = array(
+            'pspReference',
+            'originalReference',
+            'merchantAccountCode',
+            'merchantReference',
+            'value',
+            'currency',
+            'eventCode',
+            'success'
+        );
+
+        $sign_data = array();
+
+        foreach ($hmac_keys as $key) {
+            if ($key === 'value' || $key === 'currency') {
+                // Amount fields are nested
+                $value = isset($notification['amount'][$key]) ? $notification['amount'][$key] : '';
+            } else {
+                $value = isset($notification[$key]) ? $notification[$key] : '';
+            }
+            $sign_data[$key] = $value;
+        }
+
+        // Convert to string in the format: key1:value1:key2:value2...
+        $data_string = '';
+        foreach ($sign_data as $key => $value) {
+            $data_string .= $key . ':' . $value . ':';
+        }
+
+        // Remove trailing colon
+        return rtrim($data_string, ':');
+    }
+
+    private function verify_basic_auth() {
+        // If no gateway settings available, skip auth check (for backward compatibility)
+        if (!$this->gateway) {
+            $this->log('WARNING: Gateway not available, skipping auth check');
+            return true;
+        }
+
+        $webhook_username = $this->gateway->get_option('webhook_username');
+        $webhook_password = $this->gateway->get_option('webhook_password');
+
+        // If credentials not configured, skip check (but log warning)
+        if (empty($webhook_username) || empty($webhook_password)) {
+            $this->log('WARNING: Webhook credentials not configured - webhook is not secured!');
+            return true;
+        }
+
+        // Check if PHP_AUTH_USER and PHP_AUTH_PW are set
+        if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+            $this->log('ERROR: No Basic Auth credentials provided in request');
+            return false;
+        }
+
+        $provided_username = $_SERVER['PHP_AUTH_USER'];
+        $provided_password = $_SERVER['PHP_AUTH_PW'];
+
+        $this->log('Verifying credentials for user: ' . $provided_username);
+
+        // Verify credentials
+        if ($provided_username === $webhook_username && $provided_password === $webhook_password) {
+            $this->log('Credentials verified successfully');
+            return true;
+        }
+
+        $this->log('ERROR: Invalid credentials provided');
+        return false;
     }
 
     private function log($message) {

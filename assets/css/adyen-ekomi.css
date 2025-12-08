@@ -1,3 +1,11 @@
+/* Apple Pay Logo Styling */
+.payment_method_adyen_apple_pay img,
+li.wc_payment_method.payment_method_adyen_apple_pay img {
+    max-height: 24px;
+    width: auto;
+    vertical-align: middle;
+}
+
 /* Hide Apple Pay payment method by default until JavaScript confirms availability */
 .payment_method_adyen_apple_pay,
 li.wc_payment_method.payment_method_adyen_apple_pay {
