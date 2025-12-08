@@ -170,6 +170,24 @@ class Adyen_API {
             'allowedPaymentMethods' => array('applepay')
         );
 
+        // Add shopper email if available
+        if (isset($order_data['shopperEmail']) && !empty($order_data['shopperEmail'])) {
+            $payload['shopperEmail'] = $order_data['shopperEmail'];
+            $this->log('- Shopper Email: ' . $order_data['shopperEmail']);
+        }
+
+        // Add shopper name if available
+        if (isset($order_data['shopperName']) && !empty($order_data['shopperName'])) {
+            $payload['shopperName'] = $order_data['shopperName'];
+            $this->log('- Shopper Name: ' . $order_data['shopperName']['firstName'] . ' ' . $order_data['shopperName']['lastName']);
+        }
+
+        // Add billing address if available
+        if (isset($order_data['billingAddress']) && !empty($order_data['billingAddress'])) {
+            $payload['billingAddress'] = $order_data['billingAddress'];
+            $this->log('- Billing Address: ' . json_encode($order_data['billingAddress']));
+        }
+
         $this->log('Session Details:');
         $this->log('- Merchant Account: ' . $this->merchant_account);
         $this->log('- Amount: ' . $order_data['amount']['value'] . ' ' . $order_data['amount']['currency']);

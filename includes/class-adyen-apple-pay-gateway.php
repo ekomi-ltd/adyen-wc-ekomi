@@ -272,9 +272,36 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
             ),
             'reference' => $order->get_order_number(),
             'returnUrl' => add_query_arg('wc-api', 'adyen_apple_pay_return', home_url('/')),
-            'countryCode' => $order->get_billing_country() ?: 'US',
-            'shopperEmail' => $order->get_billing_email()
+            'countryCode' => $order->get_billing_country() ?: 'US'
         );
+
+        // Add shopper email if available
+        if ($order->get_billing_email()) {
+            $order_data['shopperEmail'] = $order->get_billing_email();
+            $this->log('Adding shopper email: ' . $order->get_billing_email());
+        }
+
+        // Add shopper name if available
+        if ($order->get_billing_first_name() || $order->get_billing_last_name()) {
+            $order_data['shopperName'] = array(
+                'firstName' => $order->get_billing_first_name(),
+                'lastName' => $order->get_billing_last_name()
+            );
+            $this->log('Adding shopper name: ' . $order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
+        }
+
+        // Add billing address if available
+        if ($order->get_billing_address_1() || $order->get_billing_city() || $order->get_billing_postcode()) {
+            $order_data['billingAddress'] = array(
+                'street' => $order->get_billing_address_1(),
+                'houseNumberOrName' => $order->get_billing_address_2(),
+                'postalCode' => $order->get_billing_postcode(),
+                'city' => $order->get_billing_city(),
+                'stateOrProvince' => $order->get_billing_state(),
+                'country' => $order->get_billing_country()
+            );
+            $this->log('Adding billing address');
+        }
 
         $this->log('Creating hosted payment session...');
         $this->log('Return URL: ' . $order_data['returnUrl']);
@@ -566,6 +593,43 @@ class WC_Adyen_Apple_Pay_Gateway extends WC_Payment_Gateway {
                 'returnUrl' => wc_get_checkout_url(),
                 'countryCode' => $country
             );
+
+            // Add shopper information if available from customer session
+            if (WC()->customer) {
+                // Add shopper email if available
+                $customer_email = WC()->customer->get_billing_email();
+                if (!empty($customer_email)) {
+                    $order_data['shopperEmail'] = $customer_email;
+                    $this->log('Adding shopper email: ' . $customer_email);
+                }
+
+                // Add shopper name if available
+                $first_name = WC()->customer->get_billing_first_name();
+                $last_name = WC()->customer->get_billing_last_name();
+                if (!empty($first_name) || !empty($last_name)) {
+                    $order_data['shopperName'] = array(
+                        'firstName' => $first_name,
+                        'lastName' => $last_name
+                    );
+                    $this->log('Adding shopper name: ' . $first_name . ' ' . $last_name);
+                }
+
+                // Add billing address if available
+                $address_1 = WC()->customer->get_billing_address_1();
+                $city = WC()->customer->get_billing_city();
+                $postcode = WC()->customer->get_billing_postcode();
+                if (!empty($address_1) || !empty($city) || !empty($postcode)) {
+                    $order_data['billingAddress'] = array(
+                        'street' => $address_1,
+                        'houseNumberOrName' => WC()->customer->get_billing_address_2(),
+                        'postalCode' => $postcode,
+                        'city' => $city,
+                        'stateOrProvince' => WC()->customer->get_billing_state(),
+                        'country' => WC()->customer->get_billing_country()
+                    );
+                    $this->log('Adding billing address');
+                }
+            }
 
             $this->log('Order Data: ' . json_encode($order_data));
             $this->log('Calling Adyen API to create session...');
